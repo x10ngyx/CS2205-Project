@@ -1,0 +1,10 @@
+*.o
+cmake-build-debug-wsl/
+.idea/
+.vscode/
+main
+parser.output
+parser.c
+parser.h
+lexer.c
+lexer.h
