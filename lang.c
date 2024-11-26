@@ -21,6 +21,42 @@ struct cmd * new_cmd_ptr() {
   return res;
 }
 
+struct prog * new_prog_ptr() {
+  struct prog * res = (struct prog *) malloc(sizeof(struct prog));
+  if (res == NULL) {
+    printf("Failure in malloc.\n");
+    exit(0);
+  }
+  return res;
+}
+
+struct varlist * new_varlist_ptr() {
+  struct varlist * res = (struct varlist *) malloc(sizeof(struct varlist));
+  if (res == NULL) {
+    printf("Failure in malloc.\n");
+    exit(0);
+  }
+  return res;
+}
+
+struct exprlist * new_exprlist_ptr() {
+  struct exprlist * res = (struct exprlist *) malloc(sizeof(struct exprlist));
+  if (res == NULL) {
+    printf("Failure in malloc.\n");
+    exit(0);
+  }
+  return res;
+}
+
+struct def * new_def_ptr() {
+  struct def * res = (struct def *) malloc(sizeof(struct def));
+  if (res == NULL) {
+    printf("Failure in malloc.\n");
+    exit(0);
+  }
+  return res;
+}
+
 struct expr * TConst(unsigned int value) {
   struct expr * res = new_expr_ptr();
   res -> t = T_CONST;
@@ -78,6 +114,21 @@ struct expr * TReadChar() {
   return res;
 }
 
+struct expr * TCallE(char * name, struct exprlist * args) {
+  struct expr * res = new_expr_ptr();
+  res -> t = T_CALL_E;
+  res -> d.CALL_E.name = name;
+  res -> d.CALL_E.args = args;
+  return res;
+}
+
+struct expr * TCallENoArgs(char * name) {
+  struct expr * res = new_expr_ptr();
+  res -> t = T_CALL_E_NO_ARGS;
+  res -> d.CALL_E_NO_ARGS.name = name;
+  return res;
+}
+
 struct cmd * TDecl(char * name) {
   struct cmd * res = new_cmd_ptr();
   res -> t = T_DECL;
@@ -130,6 +181,258 @@ struct cmd * TWriteChar(struct expr * arg) {
   res -> t = T_WC;
   res -> d.WC.arg = arg;
   return res;
+}
+
+struct cmd * TCallC(char * name, struct exprlist * args) {
+  struct cmd * res = new_cmd_ptr();
+  res -> t = T_CALL_C;
+  res -> d.CALL_C.name = name;
+  res -> d.CALL_C.args = args;
+  return res;
+}
+
+struct cmd * TCallCNoArgs(char * name) {
+  struct cmd * res = new_cmd_ptr();
+  res -> t = T_CALL_C_NO_ARGS;
+  res -> d.CALL_C_NO_ARGS.name = name;
+  return res;
+}
+
+struct cmd * TReturn(struct expr * retval) {
+  struct cmd * res = new_cmd_ptr();
+  res -> t = T_RET;
+  res -> d.RET.retval = retval;
+  return res;
+}
+
+struct prog * TProgWithoutDef(struct cmd * body) {
+  struct prog * res = new_prog_ptr();
+  res -> t = T_PROG_WITHOUT_DEF;
+  res -> d.PROG_WITHOUT_DEF.body = body;
+  return res;
+}
+
+struct prog * TProgWithDef(struct def * defs, struct cmd * body) {
+  struct prog * res = new_prog_ptr();
+  res -> t = T_PROG_WITH_DEF;
+  res -> d.PROG_WITH_DEF.defs = defs;
+  res -> d.PROG_WITH_DEF.body = body;
+  return res;
+}
+
+struct varlist * TSingleVar(char * arg) {
+  struct varlist * res = new_varlist_ptr();
+  res -> t = T_SINGLE_VAR;
+  res -> d.SINGLE_VAR.arg = arg;
+  return res;
+}
+
+struct varlist * TMultiVar(char * arg, struct varlist * next) {
+  struct varlist * res = new_varlist_ptr();
+  res -> t = T_MULTI_VAR;
+  res -> d.MULTI_VAR.arg = arg;
+  res -> d.MULTI_VAR.next = next;
+  return res;
+}
+
+struct exprlist * TSingleExpr(struct expr * arg) {
+  struct exprlist * res = new_exprlist_ptr();
+  res -> t = T_SINGLE_EXPR;
+  res -> d.SINGLE_EXPR.arg = arg;
+  return res;
+}
+
+struct exprlist * TMultiExpr(struct expr * arg, struct exprlist * next) {
+  struct exprlist * res = new_exprlist_ptr();
+  res -> t = T_MULTI_EXPR;
+  res -> d.MULTI_EXPR.arg = arg;
+  res -> d.MULTI_EXPR.next = next;
+  return res;
+}
+
+
+struct def * TFunc(char * name, struct varlist * args, struct cmd * body) {
+  struct def * res = new_def_ptr();
+  res -> t = T_FUNC;
+  res -> d.FUNC.name = name;
+  res -> d.FUNC.args = args;
+  res -> d.FUNC.body = body;
+  return res;
+}
+
+struct def * TFuncNoArgs(char * name, struct cmd * body) {
+  struct def * res = new_def_ptr();
+  res -> t = T_FUNC_NO_ARGS;
+  res -> d.FUNC_NO_ARGS.name = name;
+  res -> d.FUNC_NO_ARGS.body = body;
+  return res;
+}
+
+struct def * TProc(char * name, struct varlist * args, struct cmd * body) {
+  struct def * res = new_def_ptr();
+  res -> t = T_PROC;
+  res -> d.PROC.name = name;
+  res -> d.PROC.args = args;
+  res -> d.PROC.body = body;
+  return res;
+}
+
+struct def * TProcNoArgs(char * name, struct cmd * body) {
+  struct def * res = new_def_ptr();
+  res -> t = T_PROC_NO_ARGS;
+  res -> d.PROC_NO_ARGS.name = name;
+  res -> d.PROC_NO_ARGS.body = body;
+  return res;
+}
+
+struct def * TExpr(char * name, struct varlist * args, struct cmd * body) {
+  struct def * res = new_def_ptr();
+  res -> t = T_EXPR;
+  res -> d.EXPR.name = name;
+  res -> d.EXPR.args = args;
+  res -> d.EXPR.body = body;
+  return res;
+}
+
+struct def * TExprNoArgs(char * name, struct cmd * body) {
+  struct def * res = new_def_ptr();
+  res -> t = T_EXPR_NO_ARGS;
+  res -> d.EXPR_NO_ARGS.name = name;
+  res -> d.EXPR_NO_ARGS.body = body;
+  return res;
+}
+
+struct def * TCmd(char * name, struct varlist * args, struct cmd * body) {
+  struct def * res = new_def_ptr();
+  res -> t = T_CMD;
+  res -> d.CMD.name = name;
+  res -> d.CMD.args = args;
+  res -> d.CMD.body = body;
+  return res;
+}
+
+struct def * TCmdNoArgs(char * name, struct cmd * body) {
+  struct def * res = new_def_ptr();
+  res -> t = T_CMD_NO_ARGS;
+  res -> d.CMD_NO_ARGS.name = name;
+  res -> d.CMD_NO_ARGS.body = body;
+  return res;
+}
+
+struct def * TSeqDef(struct def * left, struct def * right) {
+  struct def * res = new_def_ptr();
+  res -> t = T_SEQ_DEF;
+  res -> d.SEQ_DEF.left = left;
+  res -> d.SEQ_DEF.right = right;
+  return res;
+}
+
+
+void print_prog(struct prog * p) {
+  switch (p -> t) {
+  case T_PROG_WITHOUT_DEF:
+    printf("PROG_WITHOUT_DEF(\n");
+    print_cmd(p -> d.PROG_WITHOUT_DEF.body);
+    printf(")\n");
+    break;
+  case T_PROG_WITH_DEF:
+    printf("PROG_WITH_DEF(\n");
+    print_def(p -> d.PROG_WITH_DEF.defs);
+    printf(",\n");
+    print_cmd(p -> d.PROG_WITH_DEF.body);
+    printf(")\n");
+    break;
+  }
+}
+
+void print_def(struct def * d_) {
+  switch (d_ -> t) {
+  case T_FUNC:
+    printf("FUNC(%s,", d_ -> d.FUNC.name);
+    print_varlist(d_ -> d.FUNC.args);
+    printf(",\n");
+    print_cmd(d_ -> d.FUNC.body);
+    printf(")\n");
+    break;
+  case T_FUNC_NO_ARGS:
+    printf("FUNC_NO_ARGS(%s,\n", d_ -> d.FUNC_NO_ARGS.name);
+    print_cmd(d_ -> d.FUNC_NO_ARGS.body);
+    printf(")\n");
+    break;
+  case T_PROC:
+    printf("PROC(%s,", d_ -> d.PROC.name);
+    print_varlist(d_ -> d.PROC.args);
+    printf(",\n");
+    print_cmd(d_ -> d.PROC.body);
+    printf(")\n");
+    break;
+  case T_PROC_NO_ARGS:
+    printf("PROC_NO_ARGS(%s,", d_ -> d.PROC_NO_ARGS.name);
+    print_cmd(d_ -> d.PROC_NO_ARGS.body);
+    printf(")\n");
+    break;
+  case T_EXPR:
+    printf("EXPR(%s,", d_ -> d.EXPR.name);
+    print_varlist(d_ -> d.EXPR.args);
+    printf(",\n");
+    print_cmd(d_ -> d.EXPR.body);
+    printf(")\n");
+    break;
+  case T_EXPR_NO_ARGS:
+    printf("EXPR_NO_ARGS(%s,", d_ -> d.EXPR_NO_ARGS.name);
+    print_cmd(d_ -> d.EXPR_NO_ARGS.body);
+    printf(")\n");
+    break;
+  case T_CMD:
+    printf("CMD(%s,", d_ -> d.CMD.name);
+    print_varlist(d_ -> d.CMD.args);
+    printf(",\n");
+    print_cmd(d_ -> d.CMD.body);
+    printf(")\n");
+    break;
+  case T_CMD_NO_ARGS:
+    printf("CMD_NO_ARGS(%s,", d_ -> d.CMD_NO_ARGS.name);
+    print_cmd(d_ -> d.CMD_NO_ARGS.body);
+    printf(")\n");
+    break;
+  case T_SEQ_DEF:
+    printf("SEQ_DEF(\n");
+    print_def(d_ -> d.SEQ_DEF.left);
+    printf(",\n");
+    print_def(d_ -> d.SEQ_DEF.right);
+    printf(")\n");
+    break;
+  }
+}
+
+void print_varlist(struct varlist * vl) {
+  switch (vl -> t) {
+  case T_SINGLE_VAR:
+    printf("SINGLE_VAR(%s)", vl -> d.SINGLE_VAR.arg);
+    break;
+  case T_MULTI_VAR:
+    printf("MULTI_VAR(%s,", vl -> d.MULTI_VAR.arg);
+    print_varlist(vl -> d.MULTI_VAR.next);
+    printf(")");
+    break;
+  }
+}
+
+void print_exprlist(struct exprlist * el) {
+  switch (el -> t) {
+  case T_SINGLE_EXPR:
+    printf("SINGLE_EXPR(");
+    print_expr(el -> d.SINGLE_EXPR.arg);
+    printf(")");
+    break;
+  case T_MULTI_EXPR:
+    printf("MULTI_EXPR(");
+    print_expr(el -> d.MULTI_EXPR.arg);
+    printf(",");
+    print_exprlist(el -> d.MULTI_EXPR.next);
+    printf(")");
+    break;
+  }
 }
 
 void print_binop(enum BinOpType op) {
@@ -225,6 +528,14 @@ void print_expr(struct expr * e) {
   case T_RC:
     printf("READ_CHAR()");
     break;
+  case T_CALL_E:
+    printf("CALL_E(%s,", e -> d.CALL_E.name);
+    print_exprlist(e -> d.CALL_E.args);
+    printf(")");
+    break;
+  case T_CALL_E_NO_ARGS:
+    printf("CALL_E_NO_ARGS(%s)", e -> d.CALL_E_NO_ARGS.name);
+    break;
   }
 }
 
@@ -271,6 +582,19 @@ void print_cmd(struct cmd * c) {
   case T_WC:
     printf("WRITE_CHAR(");
     print_expr(c -> d.WC.arg);
+    printf(")");
+    break;
+  case T_CALL_C:
+    printf("CALL_C(%s,", c -> d.CALL_C.name);
+    print_exprlist(c -> d.CALL_C.args);
+    printf(")");
+    break;
+  case T_CALL_C_NO_ARGS:
+    printf("CALL_C_NO_ARGS(%s)", c -> d.CALL_C_NO_ARGS.name);
+    break;
+  case T_RET:
+    printf("RET(");
+    print_expr(c -> d.RET.retval);
     printf(")");
     break;
   }

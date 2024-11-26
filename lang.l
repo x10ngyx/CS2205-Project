@@ -12,6 +12,32 @@
     return TM_NAT;
 }
 
+
+
+"define_expr" {
+    return TM_DEF_EXPR;
+}
+
+"define_cmd" {
+    return TM_DEF_CMD;
+}
+
+"func" {
+    return TM_DEF_FUNC;
+}
+
+"proc" {
+    return TM_DEF_PROC;
+}
+
+"return" {
+    return TM_RET;
+}
+
+"," {
+    return TM_COMMA;
+}
+
 "var" {
     return TM_VAR;
 }

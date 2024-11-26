@@ -3,12 +3,48 @@
 #include "lexer.h"
 #include "parser.h"
 
-extern struct cmd * root;
+extern struct prog * root;
 int yyparse();
 
 int main(int argc, char **argv) {
-    yyin = stdin;
+    FILE *inputFile;
+    FILE *outputFile;
+
+    if (argc > 1) {
+        inputFile = fopen(argv[1], "r");
+        if (inputFile == NULL) {
+            perror("Error opening input file");
+            return 1;
+        }
+        yyin = inputFile;
+    } else {
+        yyin = stdin;
+    }
+
+    outputFile = fopen("result.txt", "w");
+    if (outputFile == NULL) {
+        perror("Error opening output file");
+        return 1;
+    }
+
     yyparse();
-    fclose(stdin);
-    print_cmd(root);
+
+    if (argc > 1) {
+        fclose(inputFile);
+    } else {
+        fclose(stdin);
+    }
+
+    // Redirect stdout to the output file
+    FILE *original_stdout = stdout;
+    stdout = outputFile;
+
+    print_prog(root);
+
+    // Restore stdout
+    stdout = original_stdout;
+
+    fclose(outputFile);
+
+    return 0;
 }
