@@ -285,20 +285,20 @@ struct def * TProcNoArgs(char * name, struct cmd * body) {
   return res;
 }
 
-struct def * TExpr(char * name, struct varlist * args, struct cmd * body) {
+struct def * TExpr(char * name, struct varlist * args, struct expr * val) {
   struct def * res = new_def_ptr();
   res -> t = T_EXPR;
   res -> d.EXPR.name = name;
   res -> d.EXPR.args = args;
-  res -> d.EXPR.body = body;
+  res -> d.EXPR.val = val;
   return res;
 }
 
-struct def * TExprNoArgs(char * name, struct cmd * body) {
+struct def * TExprNoArgs(char * name, struct expr * val) {
   struct def * res = new_def_ptr();
   res -> t = T_EXPR_NO_ARGS;
   res -> d.EXPR_NO_ARGS.name = name;
-  res -> d.EXPR_NO_ARGS.body = body;
+  res -> d.EXPR_NO_ARGS.val = val;
   return res;
 }
 
@@ -375,12 +375,12 @@ void print_def(struct def * d_) {
     printf("EXPR(%s,", d_ -> d.EXPR.name);
     print_varlist(d_ -> d.EXPR.args);
     printf(",\n");
-    print_cmd(d_ -> d.EXPR.body);
+    print_expr(d_ -> d.EXPR.val);
     printf(")\n");
     break;
   case T_EXPR_NO_ARGS:
     printf("EXPR_NO_ARGS(%s,", d_ -> d.EXPR_NO_ARGS.name);
-    print_cmd(d_ -> d.EXPR_NO_ARGS.body);
+    print_expr(d_ -> d.EXPR_NO_ARGS.val);
     printf(")\n");
     break;
   case T_CMD:

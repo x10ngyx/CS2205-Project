@@ -1,4 +1,6 @@
+define_expr f() { x + y + z * 1 };
+define_expr f(x) {1};
 proc f() {var x};
 proc f(x) {1 = 2};
-proc f(x,y,x) {return 1};
+proc f(x,y,x) {return 1}.
 var x

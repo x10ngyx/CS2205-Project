@@ -38,6 +38,13 @@
     return TM_COMMA;
 }
 
+"." {
+    return TM_DOT;
+}
+
+
+
+
 "var" {
     return TM_VAR;
 }

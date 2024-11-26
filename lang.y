@@ -42,7 +42,7 @@ void * none;
 %token <none> TM_DEF_EXPR TM_DEF_CMD
 %token <none> TM_DEF_FUNC TM_DEF_PROC
 %token <none> TM_RET
-%token <none> TM_COMMA
+%token <none> TM_COMMA TM_DOT
 
 
 // Nonterminals
@@ -84,7 +84,7 @@ NT_PROG:
   {
     $$ = (TProgWithoutDef($1));
   }
-| NT_DEF TM_SEMICOL NT_CMD
+| NT_DEF TM_DOT NT_CMD
   {
     $$ = (TProgWithDef($1,$3));
   }
@@ -245,11 +245,11 @@ NT_EXPR:
 ;
 
 NT_DEF:
-  TM_DEF_EXPR TM_IDENT TM_LEFT_PAREN NT_VAR_LIST TM_RIGHT_PAREN TM_LEFT_BRACE NT_CMD TM_RIGHT_BRACE
+  TM_DEF_EXPR TM_IDENT TM_LEFT_PAREN NT_VAR_LIST TM_RIGHT_PAREN TM_LEFT_BRACE NT_EXPR TM_RIGHT_BRACE
   {
     $$ = (TExpr($2,$4,$7));
   }
-| TM_DEF_EXPR TM_IDENT TM_LEFT_PAREN TM_RIGHT_PAREN TM_LEFT_BRACE NT_CMD TM_RIGHT_BRACE
+| TM_DEF_EXPR TM_IDENT TM_LEFT_PAREN TM_RIGHT_PAREN TM_LEFT_BRACE NT_EXPR TM_RIGHT_BRACE
   {
     $$ = (TExprNoArgs($2,$6));
   }
@@ -282,7 +282,6 @@ NT_DEF:
     $$ = (TSeqDef($1,$3));
   }
 ;
-
 
 NT_VAR_LIST:
   TM_IDENT

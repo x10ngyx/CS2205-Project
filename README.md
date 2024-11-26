@@ -27,14 +27,14 @@ C :=    var V |
         V (E, E, ..., E) | V () |
         return E
 
-D :=    define_expr V (V, V, ..., V) { C } | define_expr V () { C } |
+D :=    define_expr V (V, V, ..., V) { E } | define_expr V () { E } |
         define_cmd V (V, V, ..., V) { C } | define_cmd V () { C } |
         func V (V, V, ..., V) { C } | func V () { C } |
         proc V (V, V, ..., V) { C } | proc V () { C } |
         D ; D
 
 P :=    C |
-        D ; C
+        D . C
 
 ```
 
@@ -44,7 +44,7 @@ P :=    C |
 TM_DEF_EXPR TM_DEF_CMD
 TM_DEF_FUNC TM_DEF_PROC
 TM_RET
-TM_COMMA
+TM_COMMA TM_DOT
 
 NT_PROG
 NT_DEF
@@ -61,8 +61,8 @@ NT_VAR_LIST ->  TM_IDENT |
 NT_EXPR_LIST -> NT_EXPR |
                 NT_EXPR TM_COMMA NT_EXPR_LIST
 
-NT_DEF ->       TM_DEF_EXPR TM_IDENT TM_LEFT_PAREN NT_VAR_LIST TM_RIGHT_PAREN TM_LEFT_BRACE NT_CMD TM_RIGHT_BRACE |
-                TM_DEF_EXPR TM_IDENT TM_LEFT_PAREN TM_RIGHT_PAREN TM_LEFT_BRACE NT_CMD TM_RIGHT_BRACE |
+NT_DEF ->       TM_DEF_EXPR TM_IDENT TM_LEFT_PAREN NT_VAR_LIST TM_RIGHT_PAREN TM_LEFT_BRACE NT_EXPR TM_RIGHT_BRACE |
+                TM_DEF_EXPR TM_IDENT TM_LEFT_PAREN TM_RIGHT_PAREN TM_LEFT_BRACE NT_EXPR TM_RIGHT_BRACE |
                 TM_DEF_CMD TM_IDENT TM_LEFT_PAREN NT_VAR_LIST TM_RIGHT_PAREN TM_LEFT_BRACE NT_CMD TM_RIGHT_BRACE |
                 TM_DEF_CMD TM_IDENT TM_LEFT_PAREN TM_RIGHT_PAREN TM_LEFT_BRACE NT_CMD TM_RIGHT_BRACE |
                 TM_DEF_FUNC TM_IDENT TM_LEFT_PAREN NT_VAR_LIST TM_RIGHT_PAREN TM_LEFT_BRACE NT_CMD TM_RIGHT_BRACE |
@@ -79,7 +79,7 @@ NT_CMD ->       TM_IDENT TM_LEFT_PAREN NT_EXPR_LIST TM_RIGHT_PAREN |
                 TM_RET NT_EXPR
 
 NT_PROG ->      NT_CMD |
-                NT_DEF NT_SEMICOL NT_CMD
+                NT_DEF TM_DOT NT_CMD
 
 NT_WHOLE ->     NT_PROG
 
