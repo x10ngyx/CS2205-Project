@@ -2,6 +2,7 @@
 #include "lang.h"
 #include "lexer.h"
 #include "parser.h"
+#include "unfold.h"
 
 extern struct prog * root;
 int yyparse();
@@ -39,7 +40,10 @@ int main(int argc, char **argv) {
     FILE *original_stdout = stdout;
     stdout = outputFile;
 
+    printf("program before unfolding:\n");
     print_prog(root);
+    printf("program after unfolding:\n");
+    print_prog(conv(root));
 
     // Restore stdout
     stdout = original_stdout;

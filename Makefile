@@ -22,8 +22,11 @@ lexer.o: lexer.c lexer.h parser.h lang.h
 main.o: main.c lexer.h parser.h lang.h
 	gcc -c main.c
 
-main: lang.o parser.o lexer.o main.o
-	gcc lang.o parser.o lexer.o main.o -o main
+unfold.o: unfold.c unfold.h lang.h
+	gcc -c unfold.c
+
+main: lang.o parser.o lexer.o unfold.o main.o
+	gcc lang.o parser.o lexer.o unfold.o main.o -o main
 
 all: main
 

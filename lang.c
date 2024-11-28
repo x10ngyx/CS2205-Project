@@ -329,6 +329,12 @@ struct def * TSeqDef(struct def * left, struct def * right) {
 
 
 void print_prog(struct prog * p) {
+
+  if (p == NULL) {
+    printf("NULL\n");
+    return;
+  }
+
   switch (p -> t) {
   case T_PROG_WITHOUT_DEF:
     printf("PROG_WITHOUT_DEF(\n");
