@@ -32,5 +32,5 @@ then{
 }
 else {
 	y = x / 2;
-	write_int(Minus1(x,y))
+	write_int(Plus1(x,y))
 }
