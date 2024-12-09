@@ -24,6 +24,7 @@ struct exprlist * empty_exprlist() {
     return res;
 }
 
+
 int find_var_in_varlist(struct varlist *v_list, char *name) {
     // 1 based index, return -1 if not found
     if(v_list == NULL) return -1;
@@ -92,10 +93,11 @@ struct expr * unfold_expr(struct expr *e, struct macro_list *macros, struct varl
             // res->d.VAR.name = e->d.VAR.name;
             int v_index = find_var_in_varlist(v_list, e->d.VAR.name);
             if(v_index == -1) {
-                //error
+                res->t = T_VAR;
+                res->d.VAR.name = e->d.VAR.name;
             }
-
-            res = find_expr_by_index(e_list, v_index);
+            else
+                res = find_expr_by_index(e_list, v_index);
             break;
         case T_BINOP:
             res->t = T_BINOP;
@@ -135,7 +137,7 @@ struct expr * unfold_expr(struct expr *e, struct macro_list *macros, struct varl
             else if(node->def->t == T_FUNC) {
                 res -> t = T_CALL_E;
                 res -> d.CALL_E.name = node->def->d.FUNC.name;
-                res -> d.CALL_E.args = node->def->d.FUNC.args; // to be fixed
+                res -> d.CALL_E.args = node->def->d.FUNC.args; 
             }
             else {
                 //error
@@ -147,6 +149,11 @@ struct expr * unfold_expr(struct expr *e, struct macro_list *macros, struct varl
                 //error
             }
             else if(node2->def->t == T_EXPR_NO_ARGS) {
+                // printf("here2\n");
+                // if(node2->def->d.EXPR_NO_ARGS.val->t == T_CONST) {
+                //     printf("here3\n");
+                //     printf("%d\n", node2->def->d.EXPR_NO_ARGS.val->d.CONST.value);
+                // }
                 res = unfold_expr(node2->def->d.EXPR_NO_ARGS.val, macros, empty_varlist(), empty_exprlist());
             } 
             else if(node2->def->t == T_FUNC_NO_ARGS) {
@@ -211,7 +218,7 @@ struct cmd * unfold_cmd(struct cmd *body, struct macro_list *macros, struct varl
             else if(node->def->t == T_PROC) {
                 res -> t = T_CALL_C;
                 res -> d.CALL_C.name = node->def->d.PROC.name;
-                res -> d.CALL_C.args = node->def->d.PROC.args; // to be fixed
+                res -> d.CALL_C.args = node->def->d.PROC.args; 
             }
             else {
                 //error
@@ -260,14 +267,14 @@ void add_macro(struct macro_list *macros, struct def *def) {
     switch (def->t) {
         case T_FUNC:
             node->def->d.FUNC.name = def->d.FUNC.name;
-            node->def->d.FUNC.args = def->d.FUNC.args; // to be fixed
+            node->def->d.FUNC.args = def->d.FUNC.args; 
             
             break;
             // node->def->d.FUNC.body = unfold_cmd(def->d.FUNC.body, macros);
             // break;
         case T_PROC:
             node->def->d.PROC.name = def->d.PROC.name;
-            node->def->d.PROC.args = def->d.PROC.args; // to be fixed
+            node->def->d.PROC.args = def->d.PROC.args; 
             break;
             // node->def->d.PROC.body = unfold_cmd(def->d.PROC.body, macros);
             // break;
@@ -283,7 +290,7 @@ void add_macro(struct macro_list *macros, struct def *def) {
             // break;
         case T_EXPR:
             node->def->d.EXPR.name = def->d.EXPR.name;
-            node->def->d.EXPR.args = def->d.EXPR.args; // to be fixed
+            node->def->d.EXPR.args = def->d.EXPR.args; 
             node->def->d.EXPR.val = unfold_expr(def->d.EXPR.val, macros, node->def->d.EXPR.args, empty_exprlist());
             break;
         case T_EXPR_NO_ARGS:
@@ -292,7 +299,7 @@ void add_macro(struct macro_list *macros, struct def *def) {
             break;
         case T_CMD:
             node->def->d.CMD.name = def->d.CMD.name;
-            node->def->d.CMD.args = def->d.CMD.args; // to be fixed
+            node->def->d.CMD.args = def->d.CMD.args;
             node->def->d.CMD.body = unfold_cmd(def->d.CMD.body, macros, node->def->d.CMD.args, empty_exprlist());
             break;
         case T_CMD_NO_ARGS:
@@ -338,12 +345,14 @@ struct def * clean_def(struct def *defs) {
             res->t = T_SEQ_DEF;
             res->d.SEQ_DEF.left = clean_def(defs->d.SEQ_DEF.left);
             res->d.SEQ_DEF.right = clean_def(defs->d.SEQ_DEF.right);
+            if(res->d.SEQ_DEF.left == NULL) return res->d.SEQ_DEF.right;
+            if(res->d.SEQ_DEF.right == NULL) return res->d.SEQ_DEF.left;
             break;
         case T_FUNC:
         case T_PROC:
         case T_FUNC_NO_ARGS:
         case T_PROC_NO_ARGS:
-            res = defs; //to be fixed
+            res = defs;
             break;
         case T_EXPR:
         case T_EXPR_NO_ARGS:
@@ -363,7 +372,7 @@ void clean_macros(struct def *defs, struct macro_list *macros, struct prog *res)
     struct def * new_defs = clean_def(defs);
     if(new_defs != NULL) {
         res->t = T_PROG_WITH_DEF;
-        res->d.PROG_WITH_DEF.defs = new_defs;//to be fixed
+        res->d.PROG_WITH_DEF.defs = new_defs;
     }
     else {
         res->t = T_PROG_WITHOUT_DEF;
@@ -387,32 +396,74 @@ void record_defs(struct def *defs, struct macro_list *macros) {
     return;
 }
 
+void print_macros_list(struct macro_list *macros) {
+    struct macro_node *node = macros->head;
+    while(node != NULL) {
+        switch (node->def->t) {
+            case T_EXPR_NO_ARGS:
+                printf("EXPR_NO_ARGS(%s,", node->def->d.EXPR_NO_ARGS.name);
+                print_expr(node->def->d.EXPR_NO_ARGS.val);
+                printf(")\n");
+                break;
+            default:
+                break;
+        }
+        node = node->next;
+    }
+    return;
+}
+
 struct prog * conv(struct prog * p) {
     /*
     * to do: accept a program and return a new program with all the macros unfolded
     */
+
+//    printf("conv called\n");
+
    if(p->t == T_PROG_WITHOUT_DEF) return p;
+
+//    printf("conv called\n");
 
     struct prog *res = malloc(sizeof(struct prog));
     // res->t = T_PROG_WITHOUT_DEF;
 
+    // printf("test\n");
+    // print_cmd(p->d.PROG_WITH_DEF.body);
+    // print_prog(p);
+    // printf("\n");
+    // print_cmd(p->d.PROG_WITH_DEF.body);
+
     struct def *defs = p->d.PROG_WITH_DEF.defs;
     struct cmd *body = p->d.PROG_WITH_DEF.body;
+    // printf("test\n");
+    // print_cmd(body);
+
+    // printf("defs and body initialized\n");
 
     struct macro_list *macros = malloc(sizeof(struct macro_list));
     macros->head = NULL;
     macros->tail = NULL;
 
+    // printf("macros initialized\n");
+
     record_defs(defs, macros);
+
+    // printf("macros recorded\n");
+
 
     clean_macros(defs, macros, res);
     
+    // printf("macros cleaned\n");
+
     if(res->t == T_PROG_WITHOUT_DEF) {
         res->d.PROG_WITHOUT_DEF.body = unfold_cmd(body, macros, empty_varlist(), empty_exprlist());
+
     }
     else if(res->t == T_PROG_WITH_DEF) {
         res->d.PROG_WITH_DEF.body = unfold_cmd(body, macros, empty_varlist(), empty_exprlist());
     }
+
+    // print_macros_list(macros);
 
     return res;
 }

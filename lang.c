@@ -546,6 +546,7 @@ void print_expr(struct expr * e) {
 }
 
 void print_cmd(struct cmd * c) {
+  
   switch (c -> t) {
   case T_DECL:
     printf("DECL(%s)", c -> d.DECL.name);

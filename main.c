@@ -37,6 +37,7 @@ int main(int argc, char **argv) {
     }
 
     // Redirect stdout to the output file
+    outputFile = stdout;
     FILE *original_stdout = stdout;
     stdout = outputFile;
 
