@@ -1,6 +1,6 @@
 define_expr Square(x) {x * x};
-func Area(x) {return Pi()*Square(x)};
 define_expr Pi() {3};
+func Area(x) {return Pi()*Square(x)};
 proc Plus1(x) {x = x + 1};
 define_cmd Minus1(z) {z = z - 1};
 func Mul(x,y) {
@@ -32,5 +32,5 @@ then{
 }
 else {
 	y = x / 2;
-	write_int(Plus1(x,y))
+	write_int(Square(y))
 }

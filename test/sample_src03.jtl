@@ -1,3 +1,7 @@
-func f() {return 1};
-define_expr Pi() {3}.
-x = Pi()
+define_cmd Minus1(z) {z = z - 1};
+func Mul(x) {
+	Minus1(x)
+}.
+
+var x;
+x = Mul(x)
