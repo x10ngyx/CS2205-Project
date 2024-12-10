@@ -88,6 +88,7 @@ struct expr * unfold_expr(struct expr *e, struct macro_list *macros, struct varl
             res->d.CONST.value = e->d.CONST.value;
             break;
         case T_VAR:
+            {
             int v_index = find_var_in_varlist(v_list, e->d.VAR.name);
             if(v_index == -1) {
                 res->t = T_VAR;
@@ -99,6 +100,7 @@ struct expr * unfold_expr(struct expr *e, struct macro_list *macros, struct varl
             }
             else res = find_expr_by_index(e_list, v_index);
             break;
+            }
         case T_BINOP:
             res->t = T_BINOP;
             res->d.BINOP.op = e->d.BINOP.op;
@@ -125,6 +127,7 @@ struct expr * unfold_expr(struct expr *e, struct macro_list *macros, struct varl
             res->t = T_RC;
             break;
         case T_CALL_E:
+            {
             struct macro_node *node = find_macro(macros, e->d.CALL_E.name);
             if(node == NULL) {
                 global_error = 1;
@@ -142,7 +145,9 @@ struct expr * unfold_expr(struct expr *e, struct macro_list *macros, struct varl
                 global_error = 1;
             }
             break;
+            }
         case T_CALL_E_NO_ARGS:
+            {
             struct macro_node *node2 = find_macro(macros, e->d.CALL_E_NO_ARGS.name);
             if(node2 == NULL) {
                 global_error = 1;
@@ -158,6 +163,7 @@ struct expr * unfold_expr(struct expr *e, struct macro_list *macros, struct varl
                 global_error = 1;
             }
             break;
+            }
         default:
             break;
     }
@@ -201,6 +207,7 @@ struct cmd * unfold_cmd(struct cmd *body, struct macro_list *macros, struct varl
             res->d.WC.arg = unfold_expr(body->d.WC.arg, macros, v_list, e_list);
             break;
         case T_CALL_C:
+            {
             struct macro_node *node = find_macro(macros, body->d.CALL_C.name);
             if(node == NULL) {
                 global_error = 1;
@@ -218,7 +225,9 @@ struct cmd * unfold_cmd(struct cmd *body, struct macro_list *macros, struct varl
                 global_error = 1;
             }
             break;
+            }
         case T_CALL_C_NO_ARGS:
+            {
             struct macro_node *node2 = find_macro(macros, body->d.CALL_C_NO_ARGS.name);
             if(node2 == NULL) {
                 global_error = 1;
@@ -234,6 +243,7 @@ struct cmd * unfold_cmd(struct cmd *body, struct macro_list *macros, struct varl
                 global_error = 1;
             }
             break;
+            }
         case T_RET:
             res->t = T_RET;
             res->d.RET.retval = unfold_expr(body->d.RET.retval, macros, v_list, e_list);
@@ -328,9 +338,11 @@ struct def * clean_def(struct def *defs, struct macro_list *macros) {
         case T_PROC:
         case T_FUNC_NO_ARGS:
         case T_PROC_NO_ARGS:
+            {
             struct macro_node *node = find_macro(macros, defs->d.FUNC.name);
             res = node->def;
             break;
+            }
         case T_EXPR:
         case T_EXPR_NO_ARGS:
         case T_CMD:

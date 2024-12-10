@@ -1,0 +1,8 @@
+define_expr A(x) { 2 + B(x) };
+define_expr B(x) { 1 };
+
+func F(x) { G(x) };
+func G(x) { 1 }.
+
+var x;
+x = H(0);
