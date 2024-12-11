@@ -40,9 +40,12 @@ int main(int argc, char **argv) {
     FILE *original_stdout = stdout;
     stdout = outputFile;
 
-    printf("program before unfolding:\n");
+    printf("-----program before unfolding-----\n\n");
     print_prog(root);
-    printf("program after unfolding:\n");
+
+    printf("\n");
+
+    printf("-----program after unfolding-----\n\n");
     print_prog(conv(root));
 
     // Restore stdout

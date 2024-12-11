@@ -1,0 +1,6 @@
+define_cmd A(x) { x = 1 };
+define_expr B(x) { 1 }.
+
+var x;
+x = A(0);
+B(0)

@@ -1,11 +1,11 @@
 define_expr A(x) { x };
 define_expr B(x) { 1 + A(x) };
-define_expr C(x) { 1 - A(x) - B(x)};
+define_expr C(x) { 1 - A(x) - B(x) };
 
 func F(x) { return F(x) * C(x) };
 proc G(x) { x = F(0); G(x) }.
 
 var x;
-x = F(0)
-
-// SINGLE_EXPR(?)
+x = C(0);
+x = F(0);
+G(0)

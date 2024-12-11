@@ -1,9 +1,9 @@
-define_expr Square(x) {x * x};
-define_expr Pi() {3};
-func Area(x) {return Pi()*Square(x)};
-proc Plus1(x) {x = x + 1};
-define_cmd Minus1(z) {z = z - 1};
-func Mul(x,y) {
+define_expr Square(x) { x * x };
+define_expr Pi() { 3 };
+func Area(x) { return Pi() * Square(x) };
+proc Plus1(x) { x = x + 1 };
+define_cmd Minus1(z) { z = z - 1 };
+func Mul(x, y) {
 	if (x < y)  
 	then {
 		var tmp;
@@ -11,23 +11,24 @@ func Mul(x,y) {
 		x = y;
 		y = tmp
 	}
-	else {x = x} ;
+	else { x = x } ;
 	var result;
+	result = 1;
 	while(x >= y) 
 	do {
 		result = result * x;	
 		Minus1(x)
-	} ;
+	};
 	return result
 }.
 
 var x;
 var y;
 x = read_int();
-if(x < 5)
-then{
+if (x < 5)
+then {
 	y = 2;
-	while(Area(x) <= 100) do{x = x + y; Plus1(y)};
+	while(Area(x) <= 100) do { x = x + y; Plus1(y) };
 	write_int(Area(x))
 }
 else {

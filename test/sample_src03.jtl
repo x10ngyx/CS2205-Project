@@ -1,10 +1,18 @@
-define_expr A(x) { x };
-define_expr B(x) { 1 + A(x) };
-define_expr C(x) { 1 - A(x) - B(x)};
-define_cmd D(x) {x = x + 1};
+define_expr A(x, y) { x + y };
+define_expr B(x) { 1 + A(2 * x, 3) };
+func F(k) { return F(B(k)) };
 
-func F(x) { return F(x) * C(x) };
-proc G(x) { x = F(0); G(x) }.
+define_expr C(x, y) { x + y };
+define_expr D(x) { 1 + C(2 * C(3, 4 + 5), x * 6) + B(7 + 8) };
+func G(a, b, c, d) {
+    var p;
+    p = A(B(a * c), B(b * d));
+    var q;
+    q = C(D(F(a + b)), D(F(c + d)));
+    return p + q
+}.
 
 var x;
-x = F(0)
+var y;
+x = F(2) + D(x + x * 1);
+y = G(1, 2, 3, 4)

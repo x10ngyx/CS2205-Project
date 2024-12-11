@@ -1,5 +1,34 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "lang.h"
 #include "unfold.h"
+
+struct macro_node {
+    struct def *def;
+    struct macro_node *next;
+};
+struct macro_list {
+    struct macro_node *head;
+    struct macro_node *tail;
+};
+
+struct varlist * empty_varlist();
+struct exprlist * empty_exprlist();
+
+void add_macro(struct macro_list *macros, struct def *def);
+struct macro_node * find_macro(struct macro_list *macros, char *name);
+
+int find_var_in_varlist(struct varlist *v_list, char *name);
+struct expr * find_expr_by_index(struct exprlist*e_list, int ind);
+
+struct exprlist * unfold_expr_list(struct exprlist *e_list, struct macro_list * macros, struct varlist *v_list, struct exprlist *e_list2);
+struct expr * unfold_expr(struct expr *e, struct macro_list *macros, struct varlist *v_list, struct exprlist *e_list);
+struct cmd * unfold_cmd(struct cmd *body, struct macro_list *macros, struct varlist *v_list, struct exprlist *e_list);
+
+struct def * clean_def(struct def *defs, struct macro_list *macros);
+void record_defs(struct def *defs, struct macro_list *macros);
+void clean_macros(struct def *defs, struct macro_list *macros, struct prog *res);
 
 int definition_not_found = 0, call_type_error = 0;
 
@@ -423,6 +452,18 @@ struct prog * conv(struct prog * p) {
     record_defs(defs, macros);
 
     clean_macros(defs, macros, res);
+
+
+    // /* print all macros, func&procs */
+    // printf("-----macros-----\n");
+
+    // struct macro_node *node = macros->head;
+    // while(node != NULL) {
+    //     printf("\n");
+    //     print_def(node->def);
+    //     node = node->next;
+    // }
+    // printf("-----------------\n\n");
 
     if(res->t == T_PROG_WITHOUT_DEF) {
         res->d.PROG_WITHOUT_DEF.body = unfold_cmd(body, macros, empty_varlist(), empty_exprlist());

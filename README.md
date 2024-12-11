@@ -89,18 +89,37 @@ NT_WHOLE ->     NT_PROG
         
 ```
 
+- 新增的抽象语法树结构
+
+```
+varlist :       SINGLE_VAR | MULTI_VAR
+exprlist :      SINGLE_EXPR | MULTI_EXPR
+def :           FUNC | FUNC_NO_ARGS | PROC | PROC_NO_ARGS |
+                EXPR | EXPR_NO_ARGS | CMD | CMD_NO_ARGS | SEQ_DEF
+expr :          CALL_E | CALL_E_NO_ARGS
+cmd :           CALL_C | CALL_C_NO_ARGS | RET
+prog :          PROG_WITHOUT_DEF | PROG_WITH_DEF
+```
+
+
 ## 宏展开
 
 - `unfold.h unfold.c`
 
 - 对抽象语法树进行如下处理：
-1. 将宏调用替换为相应的语法结构；
-2. 去除宏定义，即 `define_expr` 和 `define_cmd` 结构；
+1. 展开宏调用。检查 `expr` 中 ` CALL_E / CALL_E_NO_ARGS ` 和 `cmd` 中 `CALL_C / CALL_C_NO_ARGS` 结构，若是宏调用，则替换为相应定义。
+2. 去除宏定义。删除 `def` 中的 `FUNC / FUNC_NO_ARGS / PROC / PROC_NO_ARGS` 结构；
 
 
-- 宏调用只能出现在该宏的定义之后，函数/过程调用只能出现在该函数/过程的定义之后或定义体内 (参考 `test/sample_src04.jtl`)。我们会检查以下几类错误 (参考 `test/sample_src05.jtl`)：
+- 规定宏调用只能出现在该宏的定义之后，函数/过程调用只能出现在该函数/过程的定义之后或定义体内 (参考 `test/sample_src04.jtl`)。
+
+  我们会检查以下几种错误，并给出错误信息 `Error: definition not found` (参考 `test/sample_src05.jtl`)：
+
 1. 在一个宏的定义之前或定义体内调用该宏；
 2. 在一个函数/过程的定义之前调用该函数/过程；
 3. 未定义的调用，即调用一个没有定义的符号； 
 
+- 如果发现 `CALL_E / CALL_E_NO_ARGS` 处调用了语句宏，或在 `CALL_C / CALL_C_NO_ARGS` 处调用了表达式宏，会给出错误信息 `Error: call type error` (参考 `test/sample_src06.jtl`)。
+
+- 简单的程序示例见 `test/sample_src01.jtl / test/sample_src02.jtl` ，较为复杂的嵌套调用见 `test/sample_src03.jtl` 。
 
